@@ -19,9 +19,9 @@ module.exports = function (options) {
     yield next;
     var ms = new Date - start;
 
-    var format = '%s - - [%s] "%s %s HTTP/1.X" %d %s %s ms\n';
+    var format = '%s - - [%s] "%s %s%s HTTP/1.X" %d %s %s ms\n';
     var length = this.length ? this.length.toString() : '-';
     var date = moment().format('YYYY-MM-DD HH:mm:ss ZZ');
-    logger.info(util.format(format, this.ip, date, this.method, this.path, this.status, length, ms));
+    logger.info(util.format(format, this.ip, date, this.method, this.path, this.request.search, this.status, length, ms));
   }
 };
