@@ -9,6 +9,7 @@ module.exports = function (options) {
   options.facility = options.facility || '0';
   options.protocol = options.protocol || 'U';
   options.hostname = options.hostname || os.hostname();
+  
   var logger = new(winston.Logger)({
     transports: [
       new(winston.transports.Rsyslog)(options)
@@ -18,10 +19,14 @@ module.exports = function (options) {
     var start = new Date;
     yield next;
     var ms = new Date - start;
-
-    var format = '%s - - [%s] "%s %s%s HTTP/1.X" %d %s %s ms\n';
+    var format = '%s - - [%s] "%s %s%s HTTP/1.X" %d %s %s ms';
     var length = this.length ? this.length.toString() : '-';
     var date = moment().format('YYYY-MM-DD HH:mm:ss ZZ');
-    logger.info(util.format(format, this.ip, date, this.method, this.path, this.request.search, this.status, length, ms));
+    var msg = util.format(format, this.ip, date, this.method, this.path, this.request.search, this.status, length, ms);
+    if (options.getExtra)  {
+      msg += " " + options.getExtra(this)
+    }
+    msg += "\n"
+    logger.info(msg)
   }
 };
